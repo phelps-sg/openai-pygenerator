@@ -45,4 +45,5 @@ jobs:
         --outdir dist/
         .
     - name: Publish package distributions to PyPI
+      if: startsWith(github.ref, 'refs/tags')
       uses: pypa/gh-action-pypi-publish@release/v1
