@@ -1,12 +1,12 @@
 import logging
 import os
 import time
-from typing import Callable, Dict, Iterable, NewType, TypeVar
+from typing import Callable, Dict, Iterable, List, NewType, TypeVar
 
 import openai
 from openai.error import APIError, RateLimitError
 
-Completion = NewType("Completion", Dict[str, str])
+Completion = Dict[str, str]
 Seconds = NewType("Seconds", int)
 Conversation = Iterable[Completion]
 T = TypeVar("T")
@@ -107,3 +107,7 @@ def generate_completions(
 
 def user_message(content: str) -> Completion:
     return Completion({"role": "user", "content": content})
+
+
+def transcript(messages: Conversation) -> List[str]:
+    return [r["content"] for r in messages]

@@ -4,7 +4,12 @@ import pytest
 from openai.error import APIError, RateLimitError
 from openai.openai_object import OpenAIObject
 
-from openai_pygenerator import GPT_MAX_RETRIES, gpt_completions
+from openai_pygenerator import (
+    GPT_MAX_RETRIES,
+    gpt_completions,
+    transcript,
+    user_message,
+)
 
 
 def aio(text: str) -> OpenAIObject:
@@ -62,3 +67,20 @@ def test_generate_completion_error(mock_openai, mock_sleep, error):
         _ = list(gpt_completions([]))
 
     assert mock_sleep.call_count == GPT_MAX_RETRIES
+
+
+def test_user_message():
+    test_message = "test"
+    result = user_message(test_message)
+    assert result["role"] == "user"
+    assert result["content"] == test_message
+
+
+def test_transcript():
+    def test_message(i: int) -> str:
+        return f"message{i}"
+
+    test_messages = [user_message(test_message(i)) for i in range(10)]
+    result = transcript(iter(test_messages))
+    for i in range(10):
+        assert result[i] == test_message(i)
