@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0", "setuptools_scm[toml]>=6.2", "openai>=0.27"]
+requires = ["setuptools>=61.0", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
@@ -8,6 +8,7 @@ write_to = "src/version.py"
 [project]
 name = "openai_pygenerator"
 dynamic = ["version"]
+dependencies = ["openai>=0.27"]
 
 authors = [
   { name="Steve Phelps", email="sphelps@sphelps.net" },
