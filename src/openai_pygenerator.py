@@ -54,6 +54,9 @@ def completer(
     return f
 
 
+gpt_completions = completer()
+
+
 def generate_completions(
     messages: Conversation,
     model: str,
@@ -104,6 +107,3 @@ def generate_completions(
 
 def user_message(content: str) -> Completion:
     return Completion({"role": "user", "content": content})
-
-
-gpt_completions = completer()
