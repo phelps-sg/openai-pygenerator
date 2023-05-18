@@ -4,7 +4,7 @@ import pytest
 from openai.error import APIError, RateLimitError
 from openai.openai_object import OpenAIObject
 
-from src.openai_pygenerator import GPT_MAX_RETRIES, generate_completions
+from openai_pygenerator import GPT_MAX_RETRIES, generate_completions
 
 
 def aio(text: str) -> OpenAIObject:
