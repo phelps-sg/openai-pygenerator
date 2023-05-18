@@ -106,7 +106,7 @@ def generate_completions(
 
 
 def user_message(content: str) -> Completion:
-    return Completion({"role": "user", "content": content})
+    return {"role": "user", "content": content}
 
 
 def transcript(messages: Conversation) -> List[str]:
