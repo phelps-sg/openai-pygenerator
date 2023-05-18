@@ -9,8 +9,6 @@ from openai.error import APIError, RateLimitError
 Completion = NewType("Completion", Dict[str, str])
 Seconds = NewType("Seconds", int)
 Conversation = Iterable[Completion]
-
-
 T = TypeVar("T")
 
 
@@ -33,29 +31,27 @@ logger = logging.getLogger(__name__)
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
-class GPT:
-    def __init__(
-        self,
-        model: str = GPT_MODEL,
-        max_tokens: int = GPT_MAX_TOKENS,
-        temperature: float = GPT_TEMPERATURE,
-        max_retries: int = GPT_MAX_RETRIES,
-        retry_base: Seconds = GPT_RETRY_BASE_SECONDS,
-        retry_exponent: Seconds = GPT_RETRY_EXPONENT_SECONDS,
-    ):
-        def f(messages: Conversation, n: int = 1) -> Conversation:
-            return generate_completions(
-                messages,
-                model,
-                max_tokens,
-                temperature,
-                max_retries,
-                retry_base,
-                retry_exponent,
-                n,
-            )
+def completer(
+    model: str = GPT_MODEL,
+    max_tokens: int = GPT_MAX_TOKENS,
+    temperature: float = GPT_TEMPERATURE,
+    max_retries: int = GPT_MAX_RETRIES,
+    retry_base: Seconds = GPT_RETRY_BASE_SECONDS,
+    retry_exponent: Seconds = GPT_RETRY_EXPONENT_SECONDS,
+) -> Callable[[Conversation, int], Conversation]:
+    def f(messages: Conversation, n: int = 1) -> Conversation:
+        return generate_completions(
+            messages,
+            model,
+            max_tokens,
+            temperature,
+            max_retries,
+            retry_base,
+            retry_exponent,
+            n,
+        )
 
-        self.generate_completions = f
+    return f
 
 
 def generate_completions(
@@ -110,5 +106,4 @@ def user_message(content: str) -> Completion:
     return Completion({"role": "user", "content": content})
 
 
-gpt_from_env = GPT()
-gpt_completions = gpt_from_env.generate_completions
+gpt_completions = completer()
