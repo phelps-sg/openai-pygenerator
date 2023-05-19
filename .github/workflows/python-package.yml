@@ -30,6 +30,7 @@ jobs:
         pip install .[dev]
     - name: Pre-commit tests
       run: |
+        export PYTHONPATH="./src"
         pre-commit run --all-files
     - name: Test with pytest
       run: |
