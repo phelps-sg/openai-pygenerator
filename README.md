@@ -13,13 +13,15 @@ pip install openai-pygenerator
 ## Usage
 
 ~~~python
-from openai_pygenerator import ChatSession, completer
+from openai_pygenerator import ChatSession
  
 session = ChatSession()
 solution = session.ask("What is the square root of 256?")
 print(solution)
 working = session.ask("Show your working")
 print(working)
+print("Transcript:")
+print(session.transcript)
 ~~~
 
 For an example of overriding parameters see [src/example.py](src/example.py).
