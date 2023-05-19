@@ -1,14 +1,15 @@
 import logging
 import os
 import time
-from typing import Callable, Dict, Iterable, List, NewType, TypeVar
+from typing import Callable, Dict, Iterable, Iterator, List, NewType, TypeVar
 
 import openai
 from openai.error import APIError, RateLimitError
 
 Completion = Dict[str, str]
 Seconds = NewType("Seconds", int)
-Conversation = Iterable[Completion]
+Conversation = Iterator[Completion]
+History = Iterable[Completion]
 T = TypeVar("T")
 
 
@@ -38,8 +39,8 @@ def completer(
     max_retries: int = GPT_MAX_RETRIES,
     retry_base: Seconds = GPT_RETRY_BASE_SECONDS,
     retry_exponent: Seconds = GPT_RETRY_EXPONENT_SECONDS,
-) -> Callable[[Conversation, int], Conversation]:
-    def f(messages: Conversation, n: int = 1) -> Conversation:
+) -> Callable[[History, int], Conversation]:
+    def f(messages: History, n: int = 1) -> Conversation:
         return generate_completions(
             messages,
             model,
@@ -58,7 +59,7 @@ gpt_completions = completer()
 
 
 def generate_completions(
-    messages: Conversation,
+    messages: History,
     model: str,
     max_tokens: int,
     temperature: float,
@@ -109,5 +110,28 @@ def user_message(content: str) -> Completion:
     return {"role": "user", "content": content}
 
 
-def transcript(messages: Conversation) -> List[str]:
+def transcript(messages: History) -> List[str]:
     return [r["content"] for r in messages]
+
+
+class ChatSession:
+    def __init__(
+        self, generate: Callable[[History, int], Conversation] = gpt_completions
+    ):
+        self._messages: List[Completion] = []
+        self._generate = generate
+
+    def ask(self, prompt: str) -> str:
+        message = user_message(prompt)
+        self._messages.append(message)
+        completions = self._generate(self.messages, 1)
+        response = next(completions)
+        self._messages.append(response)
+        return response["content"]
+
+    def transcript(self) -> List[str]:
+        return transcript(self.messages)
+
+    @property
+    def messages(self) -> History:
+        return self._messages

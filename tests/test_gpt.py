@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Callable, Iterable
 
 import pytest
 from openai.error import APIError, RateLimitError
@@ -6,6 +6,8 @@ from openai.openai_object import OpenAIObject
 
 from openai_pygenerator import (
     GPT_MAX_RETRIES,
+    ChatSession,
+    Conversation,
     gpt_completions,
     transcript,
     user_message,
@@ -81,6 +83,27 @@ def test_transcript():
         return f"message{i}"
 
     test_messages = [user_message(test_message(i)) for i in range(10)]
-    result = transcript(iter(test_messages))
+    result = list(transcript(iter(test_messages)))
     for i in range(10):
         assert result[i] == test_message(i)
+
+
+def test_chat_session():
+    def completer(response: str) -> Callable[[Conversation, int], Conversation]:
+        def mock_complete(_history: Conversation, _n: int) -> Conversation:
+            yield {"role": "assistant", "content": response}
+
+        return mock_complete
+
+    session = ChatSession(completer("response1"))
+    result = session.ask("First question")
+    assert result == "response1"
+    session._generate = completer("response2")  # pylint: disable=protected-access
+    result = session.ask("Second question")
+    assert result == "response2"
+    assert session.transcript() == [
+        "First question",
+        "response1",
+        "Second question",
+        "response2",
+    ]
