@@ -12,7 +12,19 @@ pip install openai-pygenerator
 
 ## Usage
 
-See [src/example.py](src/example.py).  To run:
+~~~python
+from openai_pygenerator import ChatSession, completer
+ 
+session = ChatSession()
+solution = session.ask("What is the square root of 256?")
+print(solution)
+working = session.ask("Show your working")
+print(working)
+~~~
+
+For an example of overriding parameters see [src/example.py](src/example.py).
+
+## Running 
 
 ~~~bash
 export OPENAI_API_KEY=<key>
