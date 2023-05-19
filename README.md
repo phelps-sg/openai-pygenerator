@@ -1,5 +1,9 @@
 # openai-pygenerator
 
+[![GitHub Workflow Status](https://github.com/phelps-sg/openai-generator/actions/workflows/continouos-integration.yml/badge.svg)](https://github.com/phelps-sg/openai-generator/actions/workflows/continouos-integration.yml)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/phelps-sg/openai-generator)
+![GitHub](https://img.shields.io/github/license/phelps-sg/openai-generator?color=blue)
+
 This is a simple wrapper around the OpenAI Python API which provides
 type annotations, retry functionality and a generator over completions.
 
