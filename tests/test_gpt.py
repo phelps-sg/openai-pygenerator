@@ -101,7 +101,7 @@ def test_chat_session():
     session._generate = completer("response2")  # pylint: disable=protected-access
     result = session.ask("Second question")
     assert result == "response2"
-    assert session.transcript() == [
+    assert session.transcript == [
         "First question",
         "response1",
         "Second question",

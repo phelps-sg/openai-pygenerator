@@ -16,7 +16,7 @@ def example_square_root(session: ChatSession) -> None:
     print(working)
 
     heading("Session transcript:")
-    print(session.transcript())
+    print(session.transcript)
 
 
 if __name__ == "__main__":

@@ -129,6 +129,7 @@ class ChatSession:
         self._messages.append(response)
         return response["content"]
 
+    @property
     def transcript(self) -> List[str]:
         return transcript(self.messages)
 
