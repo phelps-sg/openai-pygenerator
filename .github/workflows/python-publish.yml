@@ -44,7 +44,6 @@ jobs:
         python -m
         build
         --sdist
-        --wheel
         --outdir dist/
         .
     - name: Publish package distributions to PyPI
