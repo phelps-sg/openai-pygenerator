@@ -28,7 +28,7 @@ print("Transcript:")
 print(session.transcript)
 ~~~
 
-For an example of overriding parameters see [src/example.py](src/example.py).
+For an example of overriding parameters see [src/example.py](src/openai_pygenerator/example.py).
 
 ## Running 
 

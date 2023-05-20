@@ -1,4 +1,4 @@
-from openai_pygenerator import ChatSession, completer
+from openai_pygenerator.openai_pygenerator import ChatSession, completer
 
 
 def heading(message: str, margin: int = 80) -> None:
