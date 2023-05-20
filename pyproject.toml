@@ -9,7 +9,7 @@ write_to = "src/version.py"
 pythonpath = "src"
 
 [project]
-name = "openai_pygenerator"
+name = "openai-pygenerator"
 dynamic = ["version"]
 
 authors = [
