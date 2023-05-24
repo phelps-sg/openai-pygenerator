@@ -116,11 +116,23 @@ def transcript(messages: History) -> List[str]:
 
 
 class ChatSession:
+    """Encapsulates chat session state
+
+    :param generate: A function to generate completions from a history
+    """
+
     def __init__(self, generate: Completer = gpt_completions):
         self._messages: List[Completion] = []
         self._generate = generate
 
     def ask(self, prompt: str) -> str:
+        """
+        Submit a message in the user-role to the chatbot,
+        and record both the user message and assistant
+        response in the chat history.
+        :param prompt: The user message
+        :return: The assistant response
+        """
         message = user_message(prompt)
         self._messages.append(message)
         completions = self._generate(self.messages, 1)
