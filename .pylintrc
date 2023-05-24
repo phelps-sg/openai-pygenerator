@@ -636,4 +636,5 @@ init-import=no
 redefining-builtins-modules=six.moves,past.builtins,future.builtins,builtins,io
 
 [MASTER]
+init-hook='import sys; sys.path.append("./src")'
 disable=C0114,C0116,C0115,R0902,R0913,R1735,R0903,C0103,R1705,W0621

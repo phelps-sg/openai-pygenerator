@@ -1,4 +1,6 @@
-from typing import Callable, Iterable
+# pylint: disable=redefined-outer-name
+
+from typing import Iterable
 
 import pytest
 from openai.error import APIError, RateLimitError
@@ -7,7 +9,8 @@ from openai.openai_object import OpenAIObject
 from openai_pygenerator import (
     GPT_MAX_RETRIES,
     ChatSession,
-    Conversation,
+    Completer,
+    Completions,
     gpt_completions,
     transcript,
     user_message,
@@ -20,6 +23,7 @@ def aio(text: str) -> OpenAIObject:
     return result
 
 
+# pylint: disable=too-few-public-methods
 class MockChoices:
     def __init__(self, responses: Iterable[str]):
         self.choices = [aio(text) for text in responses]
@@ -89,8 +93,8 @@ def test_transcript():
 
 
 def test_chat_session():
-    def completer(response: str) -> Callable[[Conversation, int], Conversation]:
-        def mock_complete(_history: Conversation, _n: int) -> Conversation:
+    def completer(response: str) -> Completer:
+        def mock_complete(_history: Completions, _n: int) -> Completions:
             yield {"role": "assistant", "content": response}
 
         return mock_complete

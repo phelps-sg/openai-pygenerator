@@ -18,8 +18,7 @@ def var(name: str, to_type: Callable[[str], T], default: T) -> T:
     result = os.environ.get(name)
     if result is None:
         return default
-    else:
-        return to_type(result)
+    return to_type(result)
 
 
 GPT_MODEL = var("GPT_MODEL", str, "gpt-3.5-turbo")
