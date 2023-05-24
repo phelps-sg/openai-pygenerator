@@ -8,9 +8,9 @@ from openai.error import APIError, RateLimitError
 
 Completion = Dict[str, str]
 Seconds = NewType("Seconds", int)
-Conversation = Iterator[Completion]
+Completions = Iterator[Completion]
 History = Iterable[Completion]
-Completer = Callable[[History, int], Conversation]
+Completer = Callable[[History, int], Completions]
 T = TypeVar("T")
 
 
@@ -41,7 +41,7 @@ def completer(
     retry_base: Seconds = GPT_RETRY_BASE_SECONDS,
     retry_exponent: Seconds = GPT_RETRY_EXPONENT_SECONDS,
 ) -> Completer:
-    def f(messages: History, n: int = 1) -> Conversation:
+    def f(messages: History, n: int = 1) -> Completions:
         return generate_completions(
             messages,
             model,
@@ -69,7 +69,7 @@ def generate_completions(
     retry_exponent: Seconds,
     n: int = 1,
     retries: int = 0,
-) -> Conversation:
+) -> Completions:
     logger.debug("messages = %s", messages)
     try:
         result = openai.ChatCompletion.create(
