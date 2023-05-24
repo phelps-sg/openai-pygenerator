@@ -10,6 +10,7 @@ Completion = Dict[str, str]
 Seconds = NewType("Seconds", int)
 Conversation = Iterator[Completion]
 History = Iterable[Completion]
+Completer = Callable[[History, int], Conversation]
 T = TypeVar("T")
 
 
@@ -39,7 +40,7 @@ def completer(
     max_retries: int = GPT_MAX_RETRIES,
     retry_base: Seconds = GPT_RETRY_BASE_SECONDS,
     retry_exponent: Seconds = GPT_RETRY_EXPONENT_SECONDS,
-) -> Callable[[History, int], Conversation]:
+) -> Completer:
     def f(messages: History, n: int = 1) -> Conversation:
         return generate_completions(
             messages,
@@ -115,9 +116,7 @@ def transcript(messages: History) -> List[str]:
 
 
 class ChatSession:
-    def __init__(
-        self, generate: Callable[[History, int], Conversation] = gpt_completions
-    ):
+    def __init__(self, generate: Completer = gpt_completions):
         self._messages: List[Completion] = []
         self._generate = generate
 
