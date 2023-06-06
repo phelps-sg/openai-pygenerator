@@ -18,6 +18,20 @@ pip install openai-pygenerator
 In the example below we will retry automatically if there is a rate limit error.
 
 ~~~python
+from openai_pygenerator import ChatSession
+ 
+session = ChatSession()
+solution = session.ask("What is the square root of 256?")
+print(solution)
+working = session.ask("Show your working")
+print(working)
+print("Transcript:")
+print(session.transcript)
+~~~
+
+## Completion pipelines and overriding parameters
+
+~~~python
 from typing import Iterable
 
 from openai_pygenerator import (
