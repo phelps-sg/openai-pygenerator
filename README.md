@@ -18,20 +18,6 @@ pip install openai-pygenerator
 In the example below we will retry automatically if there is a rate limit error.
 
 ~~~python
-from openai_pygenerator import ChatSession
- 
-session = ChatSession()
-solution = session.ask("What is the square root of 256?")
-print(solution)
-working = session.ask("Show your working")
-print(working)
-print("Transcript:")
-print(session.transcript)
-~~~
-
-### Generator pipelines and overriding parameters
-
-~~~python
 from typing import Iterable
 
 from openai_pygenerator import (
@@ -39,6 +25,7 @@ from openai_pygenerator import (
     Completions,
     completer,
     content,
+    next_completion,
     user_message,
 )
 
@@ -77,8 +64,11 @@ def pick_color(num_completions: int) -> Completions:
 def generate_sentence(color_completions: Completions) -> Iterable[str]:
     for color_completion in color_completions:
         color = content(color_completion)
-        result = creative_answer(f"Write a sentence about the color {color}.")
-        yield content(next(result))
+        result = next_completion(
+            creative_answer(f"Write a sentence about the color {color}.")
+        )
+        if result is not None:
+            yield content(result)
 
 
 if __name__ == "__main__":

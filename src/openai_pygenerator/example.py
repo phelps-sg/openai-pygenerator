@@ -5,7 +5,7 @@ from openai_pygenerator import (
     Completions,
     completer,
     content,
-    next_result,
+    next_completion,
     user_message,
 )
 
@@ -44,7 +44,7 @@ def pick_color(num_completions: int) -> Completions:
 def generate_sentence(color_completions: Completions) -> Iterable[str]:
     for color_completion in color_completions:
         color = content(color_completion)
-        result = next_result(
+        result = next_completion(
             creative_answer(f"Write a sentence about the color {color}.")
         )
         if result is not None:

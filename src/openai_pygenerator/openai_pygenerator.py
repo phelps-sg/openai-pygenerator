@@ -112,7 +112,7 @@ def generate_completions(
             raise
 
 
-def next_result(completions: Completions) -> Optional[Completion]:
+def next_completion(completions: Completions) -> Optional[Completion]:
     try:
         return next(completions)
     except StopIteration:
