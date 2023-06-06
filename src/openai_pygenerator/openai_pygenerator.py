@@ -2,7 +2,7 @@ import logging
 import os
 import time
 from enum import Enum, auto
-from typing import Callable, Dict, Iterable, Iterator, List, NewType, TypeVar
+from typing import Callable, Dict, Iterable, Iterator, List, NewType, Optional, TypeVar
 
 import openai
 from openai.error import APIError, RateLimitError
@@ -110,6 +110,13 @@ def generate_completions(
         else:
             logger.error("Maximum retries reached, aborting.")
             raise
+
+
+def next_result(completions: Completions) -> Optional[Completion]:
+    try:
+        return next(completions)
+    except StopIteration:
+        return None
 
 
 def user_message(text: str) -> Completion:
