@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+from enum import Enum, auto
 from typing import Callable, Dict, Iterable, Iterator, List, NewType, TypeVar
 
 import openai
@@ -12,6 +13,11 @@ Completions = Iterator[Completion]
 History = Iterable[Completion]
 Completer = Callable[[History, int], Completions]
 T = TypeVar("T")
+
+
+class Role(Enum):
+    USER = auto()
+    ASSISTANT = auto()
 
 
 def var(name: str, to_type: Callable[[str], T], default: T) -> T:
@@ -106,12 +112,34 @@ def generate_completions(
             raise
 
 
-def user_message(content: str) -> Completion:
-    return {"role": "user", "content": content}
+def user_message(text: str) -> Completion:
+    return {"role": "user", "content": text}
+
+
+def content(completion: Completion) -> str:
+    return completion["content"]
+
+
+def role(completion: Completion) -> Role:
+    r = completion["role"]
+    if r == "user":
+        return Role.USER
+    elif r == "assistant":
+        return Role.ASSISTANT
+    else:
+        raise ValueError(f"Cannot determine role from {r}")
+
+
+def is_user_role(completion: Completion) -> bool:
+    return role(completion) == Role.USER
+
+
+def is_assistant_role(completion: Completion) -> bool:
+    return role(completion) == Role.ASSISTANT
 
 
 def transcript(messages: History) -> List[str]:
-    return [r["content"] for r in messages]
+    return [content(r) for r in messages]
 
 
 class ChatSession:

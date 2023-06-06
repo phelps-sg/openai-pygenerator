@@ -10,8 +10,14 @@ from openai_pygenerator import (
     GPT_MAX_RETRIES,
     ChatSession,
     Completer,
+    Completion,
     Completions,
+    Role,
+    content,
     gpt_completions,
+    is_assistant_role,
+    is_user_role,
+    role,
     transcript,
     user_message,
 )
@@ -37,6 +43,16 @@ def mock_openai(mocker):
 @pytest.fixture
 def mock_sleep(mocker):
     return mocker.patch("time.sleep", return_value=None)
+
+
+@pytest.fixture
+def assistant_completion():
+    return {"role": "assistant", "content": "testing"}
+
+
+@pytest.fixture
+def user_completion():
+    return {"role": "user", "content": "testing"}
 
 
 @pytest.mark.parametrize(
@@ -111,3 +127,15 @@ def test_chat_session():
         "Second question",
         "response2",
     ]
+
+
+def test_content(user_completion: Completion, assistant_completion: Completion):
+    assert content(user_completion) == "testing"
+    assert content(assistant_completion) == "testing"
+
+
+def test_role(user_completion: Completion, assistant_completion: Completion):
+    assert role(user_completion) == Role.USER
+    assert role(assistant_completion) == Role.ASSISTANT
+    assert is_user_role(user_completion)
+    assert is_assistant_role(assistant_completion)
