@@ -172,7 +172,7 @@ class ChatSession:
         completions = self._generate(self.messages, 1)
         response = next(completions)
         self._messages.append(response)
-        return response["content"]
+        return content(response)
 
     @property
     def transcript(self) -> List[str]:
