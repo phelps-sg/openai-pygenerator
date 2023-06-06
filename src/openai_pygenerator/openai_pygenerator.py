@@ -130,15 +130,14 @@ def content(completion: Completion) -> str:
 
 def role(completion: Completion) -> Role:
     r = completion["role"]
-    match r:
-        case "user":
-            return Role.USER
-        case "assistant":
-            return Role.ASSISTANT
-        case "system":
-            return Role.SYSTEM
-        case _:
-            raise ValueError(f"Cannot determine role from {r}")
+    if r == "user":
+        return Role.USER
+    elif r == "assistant":
+        return Role.ASSISTANT
+    elif r == "system":
+        return Role.SYSTEM
+    else:
+        raise ValueError(f"Cannot determine role from {r}")
 
 
 def is_user_role(completion: Completion) -> bool:

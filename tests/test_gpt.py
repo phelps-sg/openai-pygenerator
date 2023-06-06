@@ -43,7 +43,7 @@ def mock_sleep(mocker):
     return mocker.patch("time.sleep", return_value=None)
 
 
-def test_completion(role: str) -> Completion:
+def make_test_completion(role: str) -> Completion:
     return {"role": role, "content": "testing"}
 
 
@@ -123,7 +123,7 @@ def test_chat_session():
 
 @pytest.mark.parametrize("role", ["user", "system", "assistant"])
 def test_content(role: str):
-    completion = test_completion(role)
+    completion = make_test_completion(role)
     assert content(completion) == "testing"
 
 
@@ -132,5 +132,5 @@ def test_content(role: str):
     [("user", Role.USER), ("system", Role.SYSTEM), ("assistant", Role.ASSISTANT)],
 )
 def test_role(test_role_str: str, expected: Role):
-    completion = test_completion(test_role_str)
+    completion = make_test_completion(test_role_str)
     assert role(completion) == expected
