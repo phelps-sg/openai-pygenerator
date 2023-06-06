@@ -15,8 +15,6 @@ from openai_pygenerator import (
     Role,
     content,
     gpt_completions,
-    is_assistant_role,
-    is_user_role,
     role,
     transcript,
     user_message,
@@ -45,14 +43,8 @@ def mock_sleep(mocker):
     return mocker.patch("time.sleep", return_value=None)
 
 
-@pytest.fixture
-def assistant_completion():
-    return {"role": "assistant", "content": "testing"}
-
-
-@pytest.fixture
-def user_completion():
-    return {"role": "user", "content": "testing"}
+def test_completion(role: str) -> Completion:
+    return {"role": role, "content": "testing"}
 
 
 @pytest.mark.parametrize(
@@ -129,13 +121,16 @@ def test_chat_session():
     ]
 
 
-def test_content(user_completion: Completion, assistant_completion: Completion):
-    assert content(user_completion) == "testing"
-    assert content(assistant_completion) == "testing"
+@pytest.mark.parametrize("role", ["user", "system", "assistant"])
+def test_content(role: str):
+    completion = test_completion(role)
+    assert content(completion) == "testing"
 
 
-def test_role(user_completion: Completion, assistant_completion: Completion):
-    assert role(user_completion) == Role.USER
-    assert role(assistant_completion) == Role.ASSISTANT
-    assert is_user_role(user_completion)
-    assert is_assistant_role(assistant_completion)
+@pytest.mark.parametrize(
+    "test_role_str, expected",
+    [("user", Role.USER), ("system", Role.SYSTEM), ("assistant", Role.ASSISTANT)],
+)
+def test_role(test_role_str: str, expected: Role):
+    completion = test_completion(test_role_str)
+    assert role(completion) == expected

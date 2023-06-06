@@ -18,6 +18,7 @@ T = TypeVar("T")
 class Role(Enum):
     USER = auto()
     ASSISTANT = auto()
+    SYSTEM = auto()
 
 
 def var(name: str, to_type: Callable[[str], T], default: T) -> T:
@@ -129,12 +130,15 @@ def content(completion: Completion) -> str:
 
 def role(completion: Completion) -> Role:
     r = completion["role"]
-    if r == "user":
-        return Role.USER
-    elif r == "assistant":
-        return Role.ASSISTANT
-    else:
-        raise ValueError(f"Cannot determine role from {r}")
+    match r:
+        case "user":
+            return Role.USER
+        case "assistant":
+            return Role.ASSISTANT
+        case "system":
+            return Role.SYSTEM
+        case _:
+            raise ValueError(f"Cannot determine role from {r}")
 
 
 def is_user_role(completion: Completion) -> bool:
