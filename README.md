@@ -15,7 +15,7 @@ pip install openai-pygenerator
 
 ## Basic usage
 
-In the example below we will retry automatically if there is a rate limit error.
+In the example below we will retry automatically if there is a `RateLimitError`.
 
 ~~~python
 from openai_pygenerator import ChatSession
