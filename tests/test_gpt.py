@@ -3,7 +3,7 @@
 from typing import Iterable
 
 import pytest
-from openai.error import APIError, RateLimitError
+from openai.error import APIError, RateLimitError, ServiceUnavailableError
 from openai.openai_object import OpenAIObject
 
 from openai_pygenerator import (
@@ -52,8 +52,11 @@ def make_test_completion(role: str) -> Completion:
     [
         RateLimitError("rate limited", http_status=429),
         APIError("Gateway Timeout", http_status=524),
-        APIError(
-            "openai.error.ServiceUnavailableError: The server is overloaded or not ready yet",
+        ServiceUnavailableError(
+            message=(
+                "openai.error.ServiceUnavailableError:"
+                " The server is overloaded or not ready yet"
+            ),
             http_status=503,
         ),
     ],
