@@ -89,7 +89,7 @@ def generate_completions(
         for choice in result.choices:
             yield choice.message
     except (RateLimitError, APIError) as err:
-        if isinstance(err, APIError) and not (err.http_status in [524, 502]):
+        if isinstance(err, APIError) and not (err.http_status in [524, 502, 503]):
             raise
         logger.warning("Error returned from openai API: %s", err)
         logger.debug("retries = %d", retries)

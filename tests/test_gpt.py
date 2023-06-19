@@ -52,6 +52,10 @@ def make_test_completion(role: str) -> Completion:
     [
         RateLimitError("rate limited", http_status=429),
         APIError("Gateway Timeout", http_status=524),
+        APIError(
+            "openai.error.ServiceUnavailableError: The server is overloaded or not ready yet",
+            http_status=503,
+        ),
     ],
 )
 def test_generate_completion(mock_openai, mock_sleep, error):
