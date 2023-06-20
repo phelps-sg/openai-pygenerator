@@ -31,7 +31,7 @@ def example_square_root(session: ChatSession) -> None:
 
 
 def creative_answer(prompt: str, num_completions: int = 1) -> Completions:
-    return high_temp_completions([user_message(prompt)], n=num_completions)
+    return high_temp_completions([user_message(prompt)], num_completions)
 
 
 def pick_color(num_completions: int) -> Completions:

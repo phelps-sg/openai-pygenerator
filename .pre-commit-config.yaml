@@ -65,7 +65,7 @@ repos:
   hooks:
     - id: mypy
       exclude: 'jupyter-book/.*|tests/.*'
-      args: [--config=mypy.ini]
+      args: [--config=mypy.ini, --explicit-package-bases]
       additional_dependencies: [ pandas-stubs ]
 
 # mypy for tests
