@@ -1,6 +1,6 @@
 # openai-pygenerator
 
-[![GitHub Workflow Status](https://github.com/phelps-sg/openai-pygenerator/actions/workflows/python-package.yml/badge.svg)](https://github.com/phelps-sg/openai-generator/actions/workflows/continouos-integration.yml)
+[![GitHub Workflow Status](https://github.com/phelps-sg/openai-pygenerator/actions/workflows/python-package.yml/badge.svg)](https://github.com/phelps-sg/openai-generator/actions/workflows/python-package.yml)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/phelps-sg/openai-pygenerator)
 ![GitHub](https://img.shields.io/github/license/phelps-sg/openai-pygenerator?color=blue)
 
