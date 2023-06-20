@@ -12,6 +12,7 @@ from openai_pygenerator import (
     Completer,
     Completion,
     Completions,
+    History,
     Role,
     content,
     gpt_completions,
@@ -109,7 +110,7 @@ def test_transcript():
 
 def test_chat_session():
     def completer(response: str) -> Completer:
-        def mock_complete(_history: Completions, _n: int) -> Completions:
+        def mock_complete(_history: History, _n: int) -> Completions:
             yield {"role": "assistant", "content": response}
 
         return mock_complete
