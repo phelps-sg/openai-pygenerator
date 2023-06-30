@@ -5,8 +5,8 @@ from enum import Enum, auto
 from typing import Callable, Dict, Iterable, Iterator, List, NewType, Optional, TypeVar
 
 import openai
+import urllib3.exceptions
 from openai.error import APIError, RateLimitError, ServiceUnavailableError
-from urllib3.exceptions import ReadTimeoutError
 
 Completion = Dict[str, str]
 Seconds = NewType("Seconds", int)
@@ -89,7 +89,12 @@ def generate_completions(
         logger.debug("response = %s", result)
         for choice in result.choices:
             yield choice.message
-    except (ReadTimeoutError, RateLimitError, APIError, ServiceUnavailableError) as err:
+    except (
+        urllib3.exceptions.TimeoutError,
+        RateLimitError,
+        APIError,
+        ServiceUnavailableError,
+    ) as err:
         if isinstance(err, APIError) and not (err.http_status in [524, 502]):
             raise
         logger.warning("Error returned from openai API: %s", err)
