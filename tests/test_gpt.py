@@ -2,6 +2,7 @@
 
 from typing import Iterable
 
+import openai.error
 import pytest
 import urllib3.exceptions as urlex
 from openai.error import APIError, RateLimitError, ServiceUnavailableError
@@ -83,6 +84,7 @@ def test_generate_completion(mock_openai, mock_sleep, error):
         APIError("Gateway Timeout", http_status=524),
         ServiceUnavailableError("Service unavailable"),
         urlex.ReadTimeoutError("test-pool", "http://test", "read timeout"),
+        openai.error.Timeout,
     ],
 )
 def test_generate_completion_error(mock_openai, mock_sleep, error):

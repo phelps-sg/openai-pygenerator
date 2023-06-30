@@ -90,6 +90,7 @@ def generate_completions(
         for choice in result.choices:
             yield choice.message
     except (
+        openai.error.Timeout,
         urllib3.exceptions.TimeoutError,
         RateLimitError,
         APIError,
