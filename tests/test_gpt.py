@@ -82,6 +82,7 @@ def test_generate_completion(mock_openai, mock_sleep, error):
     [
         RateLimitError("rate limited", http_status=429),
         APIError("Gateway Timeout", http_status=524),
+        APIError("Server shutdown", http_status=500),
         ServiceUnavailableError("Service unavailable"),
         urlex.ReadTimeoutError("test-pool", "http://test", "read timeout"),
         openai.error.Timeout,

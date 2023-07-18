@@ -96,7 +96,7 @@ def generate_completions(
         APIError,
         ServiceUnavailableError,
     ) as err:
-        if isinstance(err, APIError) and not (err.http_status in [524, 502]):
+        if isinstance(err, APIError) and not (err.http_status in [524, 502, 500]):
             raise
         logger.warning("Error returned from openai API: %s", err)
         logger.debug("retries = %d", retries)
