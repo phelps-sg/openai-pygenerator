@@ -5,10 +5,8 @@
 ![GitHub](https://img.shields.io/github/license/phelps-sg/openai-pygenerator?color=blue)
 
 This is a simple type-annotated wrapper around the OpenAI Python API which provides
-retry functionality and a generator over completions.  
-In addition to providing a simple class to manage chat session state,
-it can also be used to chain together completions from different prompts
-in a very straightforward functional-programming 
+retry functionality and a generator over completions.  In addition to providing a simple class to manage chat session state,
+it can also be used to chain together completions from different promptsin a very straightforward functional-programming 
 style using [Python generators](https://docs.python.org/3/howto/functional.html#generators).
 
 ## Installation
