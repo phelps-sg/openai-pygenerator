@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=61.0", "setuptools_scm[toml]>=6.2"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
+build-backend = "poetry_dynamic_versioning.backend"
 
 [tool.setuptools.package-data]
 openai_pygenerator = ["py.typed"]
@@ -30,3 +30,27 @@ classifiers = [
 [project.urls]
 "Homepage" = "https://github.com/phelps-sg/openai-pygenerator"
 "Bug Tracker" = "https://github.com/phelps-sg/openai-pygenerator/issues"
+[tool.poetry]
+name = "openai-pygenerator"
+version = "0.1.0"
+description = "Simple generator wrapper for OpenAI Python API with retry"
+authors = ["Steve Phelps <phelps.sg@gmail.com>"]
+license = "MIT License"
+readme = "README.md"
+packages = [{include = "src/openai_pygenerator"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+openai = "^0.28.1"
+returns = "^0.22.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.2"
+pytest-mock = "^3.11.1"
+pylint = "^3.0.1"
+mypy = "^1.6.0"
+pre-commit = "^3.5.0"
+black = {extras = ["d"], version = "^23.9.1"}
+
+[tool.poetry-dynamic-versioning]
+enable = true

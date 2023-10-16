@@ -26,11 +26,13 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install .[dev]
+        python -m pip install poetry
+        poetry install
     - name: Pre-commit tests
       run: |
+        poetry shell
         pre-commit run --all-files
     - name: Test with pytest
       run: |
+        poetry shell
         pytest
