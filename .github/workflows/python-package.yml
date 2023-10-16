@@ -30,9 +30,7 @@ jobs:
         poetry install
     - name: Pre-commit tests
       run: |
-        poetry shell
-        pre-commit run --all-files
+        poetry run pre-commit run --all-files
     - name: Test with pytest
       run: |
-        poetry shell
-        pytest
+        poetry run pytest
