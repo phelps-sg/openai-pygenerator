@@ -1,5 +1,3 @@
-# pylint: disable=redefined-outer-name
-
 from typing import Iterable
 
 import openai.error
