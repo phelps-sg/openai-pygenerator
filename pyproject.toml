@@ -8,8 +8,8 @@ openai_pygenerator = ["py.typed"]
 [tool.setuptools_scm]
 write_to = "src/version.py"
 
-[tool.pytest.ini_options]
-pythonpath = "src"
+[tool.pytest.ini_optons]
+pythonpath = ["src"]
 
 [project]
 name = "openai-pygenerator"
@@ -30,6 +30,7 @@ classifiers = [
 [project.urls]
 "Homepage" = "https://github.com/phelps-sg/openai-pygenerator"
 "Bug Tracker" = "https://github.com/phelps-sg/openai-pygenerator/issues"
+
 [tool.poetry]
 name = "openai-pygenerator"
 version = "0.0.0"
@@ -37,7 +38,7 @@ description = "Simple generator wrapper for OpenAI Python API with retry"
 authors = ["Steve Phelps <phelps.sg@gmail.com>"]
 license = "MIT License"
 readme = "README.md"
-packages = [{include = "src/openai_pygenerator"}]
+packages = [{include="openai_pygenerator", from="src"}]
 
 [tool.poetry.dependencies]
 python = "^3.8.1"
