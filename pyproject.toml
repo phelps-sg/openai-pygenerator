@@ -2,12 +2,6 @@
 requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
 build-backend = "poetry_dynamic_versioning.backend"
 
-[tool.setuptools.package-data]
-openai_pygenerator = ["py.typed"]
-
-[tool.setuptools_scm]
-write_to = "src/version.py"
-
 [tool.pytest.ini_optons]
 pythonpath = ["src"]
 
