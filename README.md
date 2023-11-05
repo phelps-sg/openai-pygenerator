@@ -119,6 +119,7 @@ export GPT_MAX_TOKENS=100
 export GPT_MAX_RETRIES=5
 export GPT_RETRY_EXPONENT_SECONDS=2
 export GPT_RETRY_BASE_SECONDS=20
+export GPT_REQUEST_TIMEOUT_SECONDS=60
 export OPENAI_API_KEY=<key>
 python src/openai_pygenerator/example.py
 ~~~

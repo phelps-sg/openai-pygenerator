@@ -55,6 +55,7 @@ GPT_MAX_TOKENS = var("GPT_MAX_TOKENS", int, 100)
 GPT_MAX_RETRIES = var("GPT_MAX_RETRIES", int, 5)
 GPT_RETRY_EXPONENT_SECONDS = Seconds(var("GPT_RETRY_EXPONENT_SECONDS", int, 2))
 GPT_RETRY_BASE_SECONDS = Seconds(var("GPT_RETRY_BASE_SECONDS", int, 20))
+GPT_REQUEST_TIMEOUT_SECONDS = Seconds(var("GPT_REQUEST_TIMEOUT_SECONDS", int, 60))
 
 logger = logging.getLogger(__name__)
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -67,6 +68,7 @@ def completer(
     max_retries: int = GPT_MAX_RETRIES,
     retry_base: Seconds = GPT_RETRY_BASE_SECONDS,
     retry_exponent: Seconds = GPT_RETRY_EXPONENT_SECONDS,
+    request_timeout: Seconds = GPT_REQUEST_TIMEOUT_SECONDS,
 ) -> Completer:
     def f(messages: History, n: int = 1) -> Completions:
         return generate_completions(
@@ -77,6 +79,7 @@ def completer(
             max_retries,
             retry_base,
             retry_exponent,
+            request_timeout,
             n,
         )
 
@@ -94,6 +97,7 @@ def generate_completions(
     max_retries: int,
     retry_base: Seconds,
     retry_exponent: Seconds,
+    request_timeout: Seconds,
     n: int = 1,
     retries: int = 0,
 ) -> Completions:
@@ -105,6 +109,7 @@ def generate_completions(
             max_tokens=max_tokens,
             n=n,
             temperature=temperature,
+            request_timeout=request_timeout,
         )
         logger.debug("response = %s", result)
         for choice in result.choices:
@@ -131,6 +136,7 @@ def generate_completions(
                 max_retries,
                 retry_base,
                 retry_exponent,
+                request_timeout,
                 n,
                 retries + 1,
             ):
