@@ -20,7 +20,7 @@ authors = [
 ]
 description = "Simple generator wrapper for OpenAI Python API with retry"
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8.1"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -40,7 +40,7 @@ readme = "README.md"
 packages = [{include = "src/openai_pygenerator"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.8.1"
 openai = "^0.28.1"
 returns = "^0.22.0"
 
@@ -51,6 +51,7 @@ pylint = "^3.0.1"
 mypy = "^1.6.0"
 pre-commit = "^3.5.0"
 black = {extras = ["d"], version = "^23.9.1"}
+pynvim = "*"
 
 [tool.poetry-dynamic-versioning]
 enable = true
