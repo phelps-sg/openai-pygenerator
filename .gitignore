@@ -1,1 +1,6 @@
 /src/version.py
+.idea
+__pycache__
+build/lib/openai_pygenerator
+dist
+src/openai_pygenerator.egg-info
