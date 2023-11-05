@@ -32,7 +32,7 @@ classifiers = [
 "Bug Tracker" = "https://github.com/phelps-sg/openai-pygenerator/issues"
 [tool.poetry]
 name = "openai-pygenerator"
-version = "0.1.0"
+version = "0.0.0"
 description = "Simple generator wrapper for OpenAI Python API with retry"
 authors = ["Steve Phelps <phelps.sg@gmail.com>"]
 license = "MIT License"
