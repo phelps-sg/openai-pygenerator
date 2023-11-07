@@ -23,7 +23,12 @@ from typing import Iterable
 import openai.error
 import pytest
 import urllib3.exceptions as urlex
-from openai.error import APIError, RateLimitError, ServiceUnavailableError
+from openai.error import (
+    APIConnectionError,
+    APIError,
+    RateLimitError,
+    ServiceUnavailableError,
+)
 from openai.openai_object import OpenAIObject
 
 from openai_pygenerator import (
@@ -72,6 +77,7 @@ def make_test_completion(role: str) -> Completion:
     "error",
     [
         RateLimitError("rate limited", http_status=429),
+        APIConnectionError("connection timeout"),
         APIError("Gateway Timeout", http_status=524),
         ServiceUnavailableError(
             message=(
@@ -89,7 +95,7 @@ def test_generate_completion(mock_openai, mock_sleep, error):
         MockChoices(["Test completion 1", "Test completion 2"]),
     ]
 
-    completions = list(gpt_completions([]))
+    completions = list(gpt_completions([]))  # type: ignore
 
     assert completions == ["Test completion 1", "Test completion 2"]
     assert mock_sleep.call_count == 2
@@ -102,7 +108,7 @@ def test_generate_completion(mock_openai, mock_sleep, error):
         APIError("Gateway Timeout", http_status=524),
         APIError("Server shutdown", http_status=500),
         ServiceUnavailableError("Service unavailable"),
-        urlex.ReadTimeoutError("test-pool", "http://test", "read timeout"),
+        urlex.ReadTimeoutError("test-pool", "http://test", "read timeout"),  # type: ignore
         openai.error.Timeout,
     ],
 )
@@ -110,7 +116,7 @@ def test_generate_completion_error(mock_openai, mock_sleep, error):
     mock_openai.side_effect = [error] * GPT_MAX_RETRIES
 
     with pytest.raises(Exception):
-        _ = list(gpt_completions([]))
+        _ = list(gpt_completions([]))  # type: ignore
 
     assert mock_sleep.call_count == GPT_MAX_RETRIES
 

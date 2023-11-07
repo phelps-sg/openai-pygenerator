@@ -26,7 +26,12 @@ from typing import Callable, Dict, Iterable, Iterator, List, NewType, Optional, 
 
 import openai
 import urllib3.exceptions
-from openai.error import APIError, RateLimitError, ServiceUnavailableError
+from openai.error import (
+    APIConnectionError,
+    APIError,
+    RateLimitError,
+    ServiceUnavailableError,
+)
 
 Completion = Dict[str, str]
 Seconds = NewType("Seconds", int)
@@ -118,6 +123,7 @@ def generate_completions(
         openai.error.Timeout,
         urllib3.exceptions.TimeoutError,
         RateLimitError,
+        APIConnectionError,
         APIError,
         ServiceUnavailableError,
     ) as err:
