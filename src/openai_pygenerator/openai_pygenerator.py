@@ -117,10 +117,10 @@ def generate_completions(
             request_timeout=request_timeout,
         )
         logger.debug("response = %s", result)
-        for choice in result.choices:
+        for choice in result.choices:  # type: ignore
             yield choice.message
     except (
-        openai.error.Timeout,
+        openai.error.Timeout,  # type: ignore
         urllib3.exceptions.TimeoutError,
         RateLimitError,
         APIConnectionError,
