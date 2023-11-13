@@ -4,12 +4,13 @@
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/phelps-sg/openai-pygenerator)
 ![GitHub](https://img.shields.io/github/license/phelps-sg/openai-pygenerator?color=blue)
 
-This is a simple type-annotated wrapper around the OpenAI Python API which provides:
-- retry functionality,
-- reduces the default timeout from 10 minutes to 20 seconds (configurable), and
+This is a simple type-annotated wrapper around the OpenAI Python API which:
+- provides configurable retry functionality,
+- reduces the default timeout from 10 minutes to 20 seconds (configurable), 
+- provides a simple class to manage chat session state, and
 - provides a generator over completions.
   
-In addition to providing a simple class to manage chat session state, it can also be used to chain together completions from different prompts in a very straightforward [functional-programming](https://docs.python.org/3/howto/functional.html) style using [Python generators](https://docs.python.org/3/howto/functional.html#generators).
+It can also be used to chain together completions from different prompts in a very straightforward [functional-programming](https://docs.python.org/3/howto/functional.html) style using [Python generators](https://docs.python.org/3/howto/functional.html#generators).
 
 ## Installation
 
