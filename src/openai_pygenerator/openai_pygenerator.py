@@ -56,7 +56,7 @@ def var(name: str, to_type: Callable[[str], T], default: T) -> T:
 
 GPT_MODEL = var("GPT_MODEL", str, "gpt-3.5-turbo")
 GPT_TEMPERATURE = var("GPT_TEMPERATURE", float, 0.2)
-GPT_MAX_TOKENS = var("GPT_MAX_TOKENS", int, 100)
+GPT_MAX_TOKENS = var("GPT_MAX_TOKENS", int, 500)
 GPT_MAX_RETRIES = var("GPT_MAX_RETRIES", int, 5)
 GPT_RETRY_EXPONENT_SECONDS = Seconds(var("GPT_RETRY_EXPONENT_SECONDS", int, 2))
 GPT_RETRY_BASE_SECONDS = Seconds(var("GPT_RETRY_BASE_SECONDS", int, 20))

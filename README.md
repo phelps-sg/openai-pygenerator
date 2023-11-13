@@ -114,7 +114,7 @@ To override default parameters use the following shell environment variables:
 ~~~bash
 export GPT_MODEL=gpt-3.5-turbo
 export GPT_TEMPERATURE=0.2
-export GPT_MAX_TOKENS=100
+export GPT_MAX_TOKENS=500
 export GPT_MAX_RETRIES=5
 export GPT_RETRY_EXPONENT_SECONDS=2
 export GPT_RETRY_BASE_SECONDS=20
