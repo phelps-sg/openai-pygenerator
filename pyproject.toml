@@ -37,7 +37,6 @@ packages = [{include="openai_pygenerator", from="src"}]
 [tool.poetry.dependencies]
 python = "^3.8.1"
 openai = "^0.28.1"
-returns = "^0.22.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.2"
