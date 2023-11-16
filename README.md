@@ -4,8 +4,13 @@
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/phelps-sg/openai-pygenerator)
 ![GitHub](https://img.shields.io/github/license/phelps-sg/openai-pygenerator?color=blue)
 
-This is a simple type-annotated wrapper around the OpenAI Python API which provides
-retry functionality and a generator over completions.  In addition to providing a simple class to manage chat session state, it can also be used to chain together completions from different prompts in a very straightforward [functional-programming](https://docs.python.org/3/howto/functional.html) style using [Python generators](https://docs.python.org/3/howto/functional.html#generators).
+This is a simple type-annotated wrapper around the OpenAI Python API which:
+- provides configurable retry functionality,
+- reduces the default timeout from 10 minutes to 20 seconds (configurable), 
+- provides a simple class to manage chat session state, and
+- provides a generator over completions.
+  
+It can also be used to chain together completions from different prompts in a very straightforward [functional-programming](https://docs.python.org/3/howto/functional.html) style using [Python generators](https://docs.python.org/3/howto/functional.html#generators).
 
 ## Installation
 
@@ -115,11 +120,11 @@ To override default parameters use the following shell environment variables:
 ~~~bash
 export GPT_MODEL=gpt-3.5-turbo
 export GPT_TEMPERATURE=0.2
-export GPT_MAX_TOKENS=100
+export GPT_MAX_TOKENS=500
 export GPT_MAX_RETRIES=5
 export GPT_RETRY_EXPONENT_SECONDS=2
 export GPT_RETRY_BASE_SECONDS=20
-export GPT_REQUEST_TIMEOUT_SECONDS=60
+export GPT_REQUEST_TIMEOUT_SECONDS=20
 export OPENAI_API_KEY=<key>
 python src/openai_pygenerator/example.py
 ~~~
