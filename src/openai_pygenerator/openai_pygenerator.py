@@ -177,6 +177,10 @@ def user_message(text: str) -> Completion:
     return ChatCompletionUserMessageParam({"role": "user", "content": text})
 
 
+def assistant_message(text: str) -> Completion:
+    return ChatCompletionAssistantMessageParam({"role": "assistant", "content": text})
+
+
 def content(completion: Completion) -> str:
     return str(completion["content"])
 
