@@ -68,8 +68,6 @@ def completer(
     max_tokens: int = GPT_MAX_TOKENS,
     temperature: float = GPT_TEMPERATURE,
     max_retries: int = GPT_MAX_RETRIES,
-    # retry_base: Seconds = GPT_RETRY_BASE_SECONDS,
-    # retry_exponent: Seconds = GPT_RETRY_EXPONENT_SECONDS,
     request_timeout: Seconds = GPT_REQUEST_TIMEOUT_SECONDS,
 ) -> Completer:
     @lru_cache()
@@ -82,17 +80,7 @@ def completer(
 
     def f(messages: History, n: int = 1) -> Completions:
         return generate_completions(
-            get_client,
-            messages,
-            model,
-            max_tokens,
-            temperature,
-            n
-            # max_retries,
-            # retry_base,
-            # retry_exponent,
-            # request_timeout,
-            # n,
+            get_client, messages, model, max_tokens, temperature, n
         )
 
     return f
@@ -107,15 +95,9 @@ def generate_completions(
     model: str,
     max_tokens: int,
     temperature: float,
-    # max_retries: int,
-    # retry_base: Seconds,
-    # retry_exponent: Seconds,
-    # request_timeout: Seconds,
     n: int = 1,
-    # retries: int = 0,
 ) -> Completions:
     logger.debug("messages = %s", messages)
-    # try:
     result = client().chat.completions.create(
         model=model,
         messages=messages,
@@ -123,41 +105,9 @@ def generate_completions(
         n=n,
         temperature=temperature,
     )
-    # request_timeout=request_timeout)
     logger.debug("response = %s", result)
     for choice in result.choices:  # type: ignore
         yield to_message_param(choice.message)
-    # except (
-    #     openai.Timeout,  # type: ignore
-    #     urllib3.exceptions.TimeoutError,
-    #     RateLimitError,
-    #     APIConnectionError,
-    #     APIError,
-    #     ServiceUnavailableError,
-    # ) as err:
-    #     if isinstance(err, APIError) and not (err.http_status in [524, 502, 500]):
-    #         raise
-    #     logger.warning("Error returned from openai API: %s", err)
-    #     logger.debug("retries = %d", retries)
-    #     if retries < max_retries:
-    #         logger.info("Retrying... ")
-    #         time.sleep(retry_base + retry_exponent**retries)
-    #         for completion in generate_completions(
-    #             messages,
-    #             model,
-    #             max_tokens,
-    #             temperature,
-    #             max_retries,
-    #             retry_base,
-    #             retry_exponent,
-    #             request_timeout,
-    #             n,
-    #             retries + 1,
-    #         ):
-    #             yield completion
-    #     else:
-    #         logger.error("Maximum retries reached, aborting.")
-    #         raise
 
 
 def to_message_param(message: ChatCompletionMessage) -> Completion:
