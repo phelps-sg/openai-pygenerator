@@ -29,7 +29,7 @@ from openai_pygenerator import (
     user_message,
 )
 
-high_temp_completions = completer(temperature=0.8)
+high_temp_completions = completer(temperature=1.0)
 
 
 def heading(message: str, margin: int = 80) -> None:

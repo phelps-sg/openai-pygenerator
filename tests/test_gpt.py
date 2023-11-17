@@ -20,19 +20,16 @@
 
 from typing import Iterable
 
-import openai.error
 import pytest
-import urllib3.exceptions as urlex
-from openai.error import (
-    APIConnectionError,
-    APIError,
-    RateLimitError,
-    ServiceUnavailableError,
+from openai.types.chat import (
+    ChatCompletionAssistantMessageParam,
+    ChatCompletionMessage,
+    ChatCompletionMessageParam,
+    ChatCompletionSystemMessageParam,
+    ChatCompletionUserMessageParam,
 )
-from openai.openai_object import OpenAIObject
 
 from openai_pygenerator import (
-    GPT_MAX_RETRIES,
     ChatSession,
     Completer,
     Completion,
@@ -40,16 +37,14 @@ from openai_pygenerator import (
     History,
     Role,
     content,
-    gpt_completions,
     role,
     transcript,
     user_message,
 )
 
 
-def aio(text: str) -> OpenAIObject:
-    result = OpenAIObject()
-    result["message"] = text
+def aio(text: str) -> ChatCompletionMessage:
+    result = ChatCompletionMessage(role="assistant", content=text)
     return result
 
 
@@ -69,58 +64,6 @@ def mock_sleep(mocker):
     return mocker.patch("time.sleep", return_value=None)
 
 
-def make_test_completion(role: str) -> Completion:
-    return {"role": role, "content": "testing"}
-
-
-@pytest.mark.parametrize(
-    "error",
-    [
-        RateLimitError("rate limited", http_status=429),
-        APIConnectionError("connection timeout"),
-        APIError("Gateway Timeout", http_status=524),
-        ServiceUnavailableError(
-            message=(
-                "openai.error.ServiceUnavailableError:"
-                " The server is overloaded or not ready yet"
-            ),
-            http_status=503,
-        ),
-    ],
-)
-def test_generate_completion(mock_openai, mock_sleep, error):
-    mock_openai.side_effect = [
-        error,
-        error,
-        MockChoices(["Test completion 1", "Test completion 2"]),
-    ]
-
-    completions = list(gpt_completions([]))  # type: ignore
-
-    assert completions == ["Test completion 1", "Test completion 2"]
-    assert mock_sleep.call_count == 2
-
-
-@pytest.mark.parametrize(
-    "error",
-    [
-        RateLimitError("rate limited", http_status=429),
-        APIError("Gateway Timeout", http_status=524),
-        APIError("Server shutdown", http_status=500),
-        ServiceUnavailableError("Service unavailable"),
-        urlex.ReadTimeoutError("test-pool", "http://test", "read timeout"),  # type: ignore
-        openai.error.Timeout,
-    ],
-)
-def test_generate_completion_error(mock_openai, mock_sleep, error):
-    mock_openai.side_effect = [error] * GPT_MAX_RETRIES
-
-    with pytest.raises(Exception):
-        _ = list(gpt_completions([]))  # type: ignore
-
-    assert mock_sleep.call_count == GPT_MAX_RETRIES
-
-
 def test_user_message():
     test_message = "test"
     result = user_message(test_message)
@@ -133,7 +76,7 @@ def test_transcript():
         return f"message{i}"
 
     test_messages = [user_message(test_message(i)) for i in range(10)]
-    result = list(transcript(iter(test_messages)))
+    result = list(transcript(test_messages))
     for i in range(10):
         assert result[i] == test_message(i)
 
@@ -159,16 +102,38 @@ def test_chat_session():
     ]
 
 
-@pytest.mark.parametrize("role", ["user", "system", "assistant"])
-def test_content(role: str):
-    completion = make_test_completion(role)
-    assert content(completion) == "testing"
+@pytest.mark.parametrize(
+    "message",
+    [
+        ChatCompletionAssistantMessageParam(
+            {"role": "assistant", "content": "testing"}
+        ),
+        ChatCompletionUserMessageParam({"role": "user", "content": "testing"}),
+        ChatCompletionSystemMessageParam({"role": "system", "content": "testing"}),
+    ],
+)
+def test_content(message: ChatCompletionMessageParam):
+    assert content(message) == "testing"
 
 
 @pytest.mark.parametrize(
-    "test_role_str, expected",
-    [("user", Role.USER), ("system", Role.SYSTEM), ("assistant", Role.ASSISTANT)],
+    "completion, expected",
+    [
+        (
+            ChatCompletionAssistantMessageParam(
+                {"role": "assistant", "content": "testing"}
+            ),
+            Role.ASSISTANT,
+        ),
+        (
+            ChatCompletionUserMessageParam({"role": "user", "content": "testing"}),
+            Role.USER,
+        ),
+        (
+            ChatCompletionSystemMessageParam({"role": "system", "content": "testing"}),
+            Role.SYSTEM,
+        ),
+    ],
 )
-def test_role(test_role_str: str, expected: Role):
-    completion = make_test_completion(test_role_str)
+def test_role(completion: Completion, expected: Role):
     assert role(completion) == expected

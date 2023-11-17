@@ -4,6 +4,12 @@
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/phelps-sg/openai-pygenerator)
 ![GitHub](https://img.shields.io/github/license/phelps-sg/openai-pygenerator?color=blue)
 
+## Import Note
+
+The openai Python API versions 1.0.0 and later now incorporate retry functionality and type annotations. This package has been migrated to the new API, but should only be used as a temporary measure to ensure backward compatibility.  If you are using this package in production, consider rewriting your code so that it uses the new openai API directly.
+
+## Overview
+
 This is a simple type-annotated wrapper around the OpenAI Python API which:
 - provides configurable retry functionality,
 - reduces the default timeout from 10 minutes to 20 seconds (configurable), 
@@ -122,8 +128,6 @@ export GPT_MODEL=gpt-3.5-turbo
 export GPT_TEMPERATURE=0.2
 export GPT_MAX_TOKENS=500
 export GPT_MAX_RETRIES=5
-export GPT_RETRY_EXPONENT_SECONDS=2
-export GPT_RETRY_BASE_SECONDS=20
 export GPT_REQUEST_TIMEOUT_SECONDS=20
 export OPENAI_API_KEY=<key>
 python src/openai_pygenerator/example.py
