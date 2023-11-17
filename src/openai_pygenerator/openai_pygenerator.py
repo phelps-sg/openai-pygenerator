@@ -25,6 +25,9 @@ from enum import Enum, auto
 from typing import Callable, Dict, Iterable, Iterator, List, NewType, Optional, TypeVar
 
 import openai
+from openai import OpenAI
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 import urllib3.exceptions
 from openai.error import (
     APIConnectionError,
@@ -63,7 +66,7 @@ GPT_RETRY_BASE_SECONDS = Seconds(var("GPT_RETRY_BASE_SECONDS", int, 20))
 GPT_REQUEST_TIMEOUT_SECONDS = Seconds(var("GPT_REQUEST_TIMEOUT_SECONDS", int, 20))
 
 logger = logging.getLogger(__name__)
-openai.api_key = os.getenv("OPENAI_API_KEY")
+
 
 
 def completer(
@@ -108,19 +111,17 @@ def generate_completions(
 ) -> Completions:
     logger.debug("messages = %s", messages)
     try:
-        result = openai.ChatCompletion.create(
-            model=model,
-            messages=messages,
-            max_tokens=max_tokens,
-            n=n,
-            temperature=temperature,
-            request_timeout=request_timeout,
-        )
+        result = client.chat.completions.create(model=model,
+        messages=messages,
+        max_tokens=max_tokens,
+        n=n,
+        temperature=temperature,
+        request_timeout=request_timeout)
         logger.debug("response = %s", result)
         for choice in result.choices:  # type: ignore
             yield choice.message
     except (
-        openai.error.Timeout,  # type: ignore
+        openai.Timeout,  # type: ignore
         urllib3.exceptions.TimeoutError,
         RateLimitError,
         APIConnectionError,

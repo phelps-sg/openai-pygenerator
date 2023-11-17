@@ -109,7 +109,7 @@ def test_generate_completion(mock_openai, mock_sleep, error):
         APIError("Server shutdown", http_status=500),
         ServiceUnavailableError("Service unavailable"),
         urlex.ReadTimeoutError("test-pool", "http://test", "read timeout"),  # type: ignore
-        openai.error.Timeout,
+        openai.Timeout,
     ],
 )
 def test_generate_completion_error(mock_openai, mock_sleep, error):
