@@ -20,26 +20,22 @@
 
 import logging
 import os
-import time
 from enum import Enum, auto
-from typing import Callable, Dict, Iterable, Iterator, List, NewType, Optional, TypeVar
+from functools import lru_cache
+from typing import Callable, Iterator, List, NewType, Optional, TypeVar
 
-import openai
 from openai import OpenAI
-
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-import urllib3.exceptions
-from openai.error import (
-    APIConnectionError,
-    APIError,
-    RateLimitError,
-    ServiceUnavailableError,
+from openai.types.chat import (
+    ChatCompletionAssistantMessageParam,
+    ChatCompletionMessage,
+    ChatCompletionMessageParam,
+    ChatCompletionUserMessageParam,
 )
 
-Completion = Dict[str, str]
+Completion = ChatCompletionMessageParam
 Seconds = NewType("Seconds", int)
 Completions = Iterator[Completion]
-History = Iterable[Completion]
+History = List[Completion]
 Completer = Callable[[History, int], Completions]
 T = TypeVar("T")
 
@@ -57,16 +53,14 @@ def var(name: str, to_type: Callable[[str], T], default: T) -> T:
     return to_type(result)
 
 
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 GPT_MODEL = var("GPT_MODEL", str, "gpt-3.5-turbo")
 GPT_TEMPERATURE = var("GPT_TEMPERATURE", float, 0.2)
 GPT_MAX_TOKENS = var("GPT_MAX_TOKENS", int, 500)
 GPT_MAX_RETRIES = var("GPT_MAX_RETRIES", int, 5)
-GPT_RETRY_EXPONENT_SECONDS = Seconds(var("GPT_RETRY_EXPONENT_SECONDS", int, 2))
-GPT_RETRY_BASE_SECONDS = Seconds(var("GPT_RETRY_BASE_SECONDS", int, 20))
 GPT_REQUEST_TIMEOUT_SECONDS = Seconds(var("GPT_REQUEST_TIMEOUT_SECONDS", int, 20))
 
 logger = logging.getLogger(__name__)
-
 
 
 def completer(
@@ -74,21 +68,31 @@ def completer(
     max_tokens: int = GPT_MAX_TOKENS,
     temperature: float = GPT_TEMPERATURE,
     max_retries: int = GPT_MAX_RETRIES,
-    retry_base: Seconds = GPT_RETRY_BASE_SECONDS,
-    retry_exponent: Seconds = GPT_RETRY_EXPONENT_SECONDS,
+    # retry_base: Seconds = GPT_RETRY_BASE_SECONDS,
+    # retry_exponent: Seconds = GPT_RETRY_EXPONENT_SECONDS,
     request_timeout: Seconds = GPT_REQUEST_TIMEOUT_SECONDS,
 ) -> Completer:
+    @lru_cache()
+    def get_client() -> OpenAI:
+        return OpenAI(
+            api_key=OPENAI_API_KEY,
+            timeout=request_timeout,
+            max_retries=max_retries,
+        )
+
     def f(messages: History, n: int = 1) -> Completions:
         return generate_completions(
+            get_client,
             messages,
             model,
             max_tokens,
             temperature,
-            max_retries,
-            retry_base,
-            retry_exponent,
-            request_timeout,
-            n,
+            n
+            # max_retries,
+            # retry_base,
+            # retry_exponent,
+            # request_timeout,
+            # n,
         )
 
     return f
@@ -98,59 +102,68 @@ gpt_completions = completer()
 
 
 def generate_completions(
+    client: Callable[[], OpenAI],
     messages: History,
     model: str,
     max_tokens: int,
     temperature: float,
-    max_retries: int,
-    retry_base: Seconds,
-    retry_exponent: Seconds,
-    request_timeout: Seconds,
+    # max_retries: int,
+    # retry_base: Seconds,
+    # retry_exponent: Seconds,
+    # request_timeout: Seconds,
     n: int = 1,
-    retries: int = 0,
+    # retries: int = 0,
 ) -> Completions:
     logger.debug("messages = %s", messages)
-    try:
-        result = client.chat.completions.create(model=model,
+    # try:
+    result = client().chat.completions.create(
+        model=model,
         messages=messages,
         max_tokens=max_tokens,
         n=n,
         temperature=temperature,
-        request_timeout=request_timeout)
-        logger.debug("response = %s", result)
-        for choice in result.choices:  # type: ignore
-            yield choice.message
-    except (
-        openai.Timeout,  # type: ignore
-        urllib3.exceptions.TimeoutError,
-        RateLimitError,
-        APIConnectionError,
-        APIError,
-        ServiceUnavailableError,
-    ) as err:
-        if isinstance(err, APIError) and not (err.http_status in [524, 502, 500]):
-            raise
-        logger.warning("Error returned from openai API: %s", err)
-        logger.debug("retries = %d", retries)
-        if retries < max_retries:
-            logger.info("Retrying... ")
-            time.sleep(retry_base + retry_exponent**retries)
-            for completion in generate_completions(
-                messages,
-                model,
-                max_tokens,
-                temperature,
-                max_retries,
-                retry_base,
-                retry_exponent,
-                request_timeout,
-                n,
-                retries + 1,
-            ):
-                yield completion
-        else:
-            logger.error("Maximum retries reached, aborting.")
-            raise
+    )
+    # request_timeout=request_timeout)
+    logger.debug("response = %s", result)
+    for choice in result.choices:  # type: ignore
+        yield to_message_param(choice.message)
+    # except (
+    #     openai.Timeout,  # type: ignore
+    #     urllib3.exceptions.TimeoutError,
+    #     RateLimitError,
+    #     APIConnectionError,
+    #     APIError,
+    #     ServiceUnavailableError,
+    # ) as err:
+    #     if isinstance(err, APIError) and not (err.http_status in [524, 502, 500]):
+    #         raise
+    #     logger.warning("Error returned from openai API: %s", err)
+    #     logger.debug("retries = %d", retries)
+    #     if retries < max_retries:
+    #         logger.info("Retrying... ")
+    #         time.sleep(retry_base + retry_exponent**retries)
+    #         for completion in generate_completions(
+    #             messages,
+    #             model,
+    #             max_tokens,
+    #             temperature,
+    #             max_retries,
+    #             retry_base,
+    #             retry_exponent,
+    #             request_timeout,
+    #             n,
+    #             retries + 1,
+    #         ):
+    #             yield completion
+    #     else:
+    #         logger.error("Maximum retries reached, aborting.")
+    #         raise
+
+
+def to_message_param(message: ChatCompletionMessage) -> Completion:
+    return ChatCompletionAssistantMessageParam(
+        {"role": message.role, "content": message.content}
+    )
 
 
 def next_completion(completions: Completions) -> Optional[Completion]:
@@ -161,11 +174,11 @@ def next_completion(completions: Completions) -> Optional[Completion]:
 
 
 def user_message(text: str) -> Completion:
-    return {"role": "user", "content": text}
+    return ChatCompletionUserMessageParam({"role": "user", "content": text})
 
 
 def content(completion: Completion) -> str:
-    return completion["content"]
+    return str(completion["content"])
 
 
 def role(completion: Completion) -> Role:

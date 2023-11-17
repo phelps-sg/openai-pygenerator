@@ -61,22 +61,22 @@ repos:
 
 # mypy
 - repo: https://github.com/pre-commit/mirrors-mypy
-  rev: 'v1.2.0'  # Use the sha / tag you want to point at
+  rev: 'v1.7.0'  # Use the sha / tag you want to point at
   hooks:
     - id: mypy
       exclude: 'jupyter-book/.*|tests/.*'
       args: [--config=mypy.ini, --explicit-package-bases]
-      additional_dependencies: [ pandas-stubs ]
+      additional_dependencies: [ openai ]
 
 # mypy for tests
 - repo: https://github.com/pre-commit/mirrors-mypy
-  rev: 'v1.2.0'  # Use the sha / tag you want to point at
+  rev: 'v1.7.0'  # Use the sha / tag you want to point at
   hooks:
     - id: mypy
       name: mypy-tests
       files: ^tests/
       args: [--config=mypy-tests.ini]
-      additional_dependencies: [ pandas-stubs ]
+      additional_dependencies: [ openai ] 
 
 # pylint
 - repo: local
