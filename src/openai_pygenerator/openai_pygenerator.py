@@ -24,7 +24,7 @@ from enum import Enum, auto
 from functools import lru_cache
 from typing import Callable, Iterator, List, NewType, Optional, TypeVar
 
-from openai import OpenAI
+import openai
 from openai.types.chat import (
     ChatCompletionAssistantMessageParam,
     ChatCompletionMessage,
@@ -71,8 +71,8 @@ def completer(
     request_timeout: Seconds = GPT_REQUEST_TIMEOUT_SECONDS,
 ) -> Completer:
     @lru_cache()
-    def get_client() -> OpenAI:
-        return OpenAI(
+    def get_client() -> openai.OpenAI:
+        return openai.OpenAI(
             api_key=OPENAI_API_KEY,
             timeout=request_timeout,
             max_retries=max_retries,
@@ -90,14 +90,15 @@ gpt_completions = completer()
 
 
 def generate_completions(
-    client: Callable[[], OpenAI],
+    client: Callable[[], openai.OpenAI],
     messages: History,
     model: str,
     max_tokens: int,
     temperature: float,
     n: int = 1,
 ) -> Completions:
-    logger.debug("messages = %s", messages)
+    client_instance = client()
+    logger.debug("client_instance = %s", client_instance)
     result = client().chat.completions.create(
         model=model,
         messages=messages,
@@ -105,7 +106,7 @@ def generate_completions(
         n=n,
         temperature=temperature,
     )
-    logger.debug("response = %s", result)
+    logger.debug("result = %s", result)
     for choice in result.choices:  # type: ignore
         yield to_message_param(choice.message)
 

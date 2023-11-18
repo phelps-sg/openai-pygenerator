@@ -18,7 +18,9 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 
+import logging
 from typing import Iterable
+from unittest.mock import Mock
 
 import pytest
 from openai.types.chat import (
@@ -41,6 +43,9 @@ from openai_pygenerator import (
     transcript,
     user_message,
 )
+from openai_pygenerator.openai_pygenerator import completer, to_message_param
+
+logger = logging.getLogger(__name__)
 
 
 def aio(text: str) -> ChatCompletionMessage:
@@ -81,17 +86,48 @@ def test_transcript():
         assert result[i] == test_message(i)
 
 
+def test_completer(mocker):
+    test_completion = Mock()
+    test_completion.message = ChatCompletionMessage(role="assistant", content="test")
+
+    completions_mock = Mock()
+    completions_mock.choices = iter([test_completion])
+
+    completions_obj_mock = Mock()
+    completions_obj_mock.create.return_value = completions_mock
+
+    instances = 0
+
+    def new_openai(**_kwargs):
+        nonlocal instances
+        openai_mock = Mock()
+        openai_mock.chat.completions = completions_obj_mock
+        instances = instances + 1
+        return openai_mock
+
+    mocker.patch("openai.OpenAI", side_effect=new_openai)
+
+    c = completer()
+    completions = c([], 1)
+    assert list(completions) == [to_message_param(test_completion.message)]
+    assert instances == 1
+    c1 = completer()
+    assert c1 != c
+    _ = c1([], 1)
+    assert instances == 1
+
+
 def test_chat_session():
-    def completer(response: str) -> Completer:
+    def mock_completer(response: str) -> Completer:
         def mock_complete(_history: History, _n: int) -> Completions:
             yield {"role": "assistant", "content": response}
 
         return mock_complete
 
-    session = ChatSession(completer("response1"))
+    session = ChatSession(mock_completer("response1"))
     result = session.ask("First question")
     assert result == "response1"
-    session._generate = completer("response2")  # pylint: disable=protected-access
+    session._generate = mock_completer("response2")  # pylint: disable=protected-access
     result = session.ask("Second question")
     assert result == "response2"
     assert session.transcript == [
